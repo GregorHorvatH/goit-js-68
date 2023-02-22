@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { ContextExclusionPlugin } from 'webpack';
 import './styles.css';
 
 const getTodo = ({ id, value, checked }) => `
@@ -16,6 +17,26 @@ const refs = {
 
 let todos = [];
 
+const render = () => {
+  const itemList = todos.map(todo => getTodo(todo)).join('');
+
+  refs.list.innerHTML = '';
+  refs.list.insertAdjacentHTML('beforeend', itemList);
+};
+
+const loadTodos = () => {
+  // try {
+  //   todos = JSON.parse(localStorage.getItem('todos'));
+  // } catch (error) {
+  //   console.log('error:', error);
+  //   todos = [];
+  // }
+};
+
+const saveTodos = () => {
+  localStorage.setItem('todos', JSON.stringify(todos));
+};
+
 const handleSubmit = event => {
   const input = event.target.elements.text;
   const { value } = input;
@@ -24,11 +45,15 @@ const handleSubmit = event => {
   event.preventDefault();
   todos.push(newTodo);
   input.value = '';
+
+  saveTodos();
   render();
 };
 
 const deleteTodo = id => {
   todos = todos.filter(todo => todo.id !== id);
+
+  saveTodos();
   render();
 };
 
@@ -52,13 +77,7 @@ const handleTodoClick = event => {
   }
 };
 
-const render = () => {
-  const itemList = todos.map(todo => getTodo(todo)).join('');
-
-  refs.list.innerHTML = '';
-  refs.list.insertAdjacentHTML('beforeend', itemList);
-};
-
+loadTodos();
 render();
 
 refs.form.addEventListener('submit', handleSubmit);
