@@ -1,24 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
-import * as basicLightbox from 'basiclightbox';
+import { getTodo, modal } from './components';
 
-import 'basiclightbox/dist/basicLightbox.min.css';
 import './styles.css';
-
-const getTodo = ({ id, value, checked }) => `
-  <li data-id=${id}>
-    <input data-action="check" type="checkbox" ${checked ? 'checked' : ''} />
-    <span>${value}</span>
-    <button data-action="delete">x</button>
-    <button data-action="view">view</button>
-  </li>`;
-
-const modal = basicLightbox.create(`
-  <div class="modal">
-    <h4>Lorem ipsum</h4>
-    <p class="text">test modal text</p>
-    <button>ok</button>
-  </div>
-`);
 
 const refs = {
   form: document.querySelector('.form'),
