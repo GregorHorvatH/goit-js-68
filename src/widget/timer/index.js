@@ -15,7 +15,6 @@ export class Timer {
     this.startButton = this.parent.querySelector('.btn-start');
     this.text = this.parent.querySelector('.text');
 
-    // this.stopButton.setAttribute('disabled', true);
     this.stopButton.disabled = true;
 
     this.stopButton.addEventListener('click', this.stop.bind(this));
