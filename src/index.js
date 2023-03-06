@@ -1,4 +1,4 @@
-// import './components/Todos';
+import './components/Todos';
 
 // import { Timer } from './widget/timer';
 // import { Clock } from './widget/clock';
@@ -194,15 +194,15 @@
 //   });
 
 // ---- hw 6 ----
-const categories = document.querySelector('#categories');
-const items = categories.querySelectorAll('.item');
+// const categories = document.querySelector('#categories');
+// const items = categories.querySelectorAll('.item');
 
-console.log(`Number of categories: ${items.length}`);
+// console.log(`Number of categories: ${items.length}`);
 
-items.forEach(item => {
-  const header = item.querySelector('h2').textContent;
-  const elements = item.querySelectorAll('li');
+// items.forEach(item => {
+//   const header = item.querySelector('h2').textContent;
+//   const elements = item.querySelectorAll('li');
 
-  console.log(`Category: ${header}`);
-  console.log(`Elements: ${elements.length}`);
-});
+//   console.log(`Category: ${header}`);
+//   console.log(`Elements: ${elements.length}`);
+// });

@@ -1,22 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
-import { getTodo, modal } from '../index';
+import { getTodo, modal, loadTodosLayout } from '../index';
+import { createTodo, readTodos, updateTodo, deleteTodo } from '../../api/todos';
 
 import './styles.css';
 
-const todosTemplate = () => `
-  <form class="form">
-    <input type="text" name="text" />
-    <button type="submit">+ Add</button>
-  </form>
-
-  <ul class="todo-list"></ul>
-`;
-
-document.body.insertAdjacentHTML('beforeend', todosTemplate());
+loadTodosLayout();
 
 const refs = {
   form: document.querySelector('.form'),
   list: document.querySelector('.todo-list'),
+  loader: document.querySelector('.loader'),
   modalButton: modal.element().querySelector('button'),
 };
 
@@ -29,39 +22,66 @@ const render = () => {
   refs.list.insertAdjacentHTML('beforeend', itemList);
 };
 
-const loadTodos = () => {
-  try {
-    todos = JSON.parse(localStorage.getItem('todos')) || [];
-
-    // throw new Error('lorem ipsum');
-  } catch (error) {
-    console.log('error happened:', error.message);
-    todos = [];
-  }
+const showLoader = () => {
+  refs.loader.classList.add('show');
 };
 
-const saveTodos = () => {
-  localStorage.setItem('todos', JSON.stringify(todos));
+const hideLoader = () => {
+  refs.loader.classList.remove('show');
+};
+
+const loadTodos = () => {
+  showLoader();
+
+  return readTodos()
+    .then(data => {
+      todos = data;
+    })
+    .catch(error => {
+      todos = [];
+      console.log('error happened:', error.message);
+    })
+    .finally(() => {
+      hideLoader();
+    });
 };
 
 const handleSubmit = event => {
   const input = event.target.elements.text;
   const { value } = input;
-  const newTodo = { id: uuidv4(), value, checked: false };
+  const newTodo = { value, checked: false };
 
   event.preventDefault();
-  todos.push(newTodo);
-  input.value = '';
+  showLoader();
 
-  saveTodos();
-  render();
+  createTodo(newTodo)
+    .then(() => {
+      todos.push(newTodo);
+      input.value = '';
+      render();
+    })
+    .catch(error => {
+      console.log('error happened:', error.message);
+    })
+    .finally(() => {
+      hideLoader();
+    });
 };
 
-const deleteTodo = id => {
-  todos = todos.filter(todo => todo.id !== id);
+const removeTodo = id => {
+  showLoader();
 
-  saveTodos();
-  render();
+  deleteTodo(id)
+    .then(() => {
+      todos = todos.filter(todo => todo.id !== id);
+      render();
+    })
+    .catch(error => {
+      console.log('error happened:', error.message);
+    })
+    .finally(() => {
+      hideLoader();
+    });
 };
 
 const viewTodo = id => {
@@ -72,17 +92,29 @@ const viewTodo = id => {
 };
 
 const toggleCheckbox = id => {
-  todos = todos.map(item => {
-    return item.id === id
-      ? {
-          ...item,
-          checked: !item.checked,
-        }
-      : item;
-  });
+  const { checked } = todos.find(todo => todo.id === id);
 
-  saveTodos();
-  render();
+  showLoader();
+
+  updateTodo(id, { checked: !checked })
+    .then(() => {
+      todos = todos.map(item => {
+        return item.id === id
+          ? {
+              ...item,
+              checked: !item.checked,
+            }
+          : item;
+      });
+
+      render();
+    })
+    .catch(error => {
+      console.log('error happened:', error.message);
+    })
+    .finally(() => {
+      hideLoader();
+    });
 };
 
 const handleTodoClick = event => {
@@ -92,7 +124,7 @@ const handleTodoClick = event => {
 
   switch (action) {
     case 'delete':
-      deleteTodo(id);
+      removeTodo(id);
       break;
 
     case 'view':
@@ -105,8 +137,9 @@ const handleTodoClick = event => {
   }
 };
 
-loadTodos();
-render();
+loadTodos().then(() => {
+  render();
+});
 
 refs.form.addEventListener('submit', handleSubmit);
 refs.list.addEventListener('click', handleTodoClick);

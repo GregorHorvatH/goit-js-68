@@ -17,3 +17,11 @@ body {
   padding: 50px;
   border-radius: 5px;
 }
+
+.loader {
+  display: none;
+}
+
+.show {
+  display: block;
+}
