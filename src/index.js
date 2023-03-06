@@ -193,7 +193,7 @@
 //     console.log('error:', error);
 //   });
 
-// // ---- hw 6 ----
+// ---- hw 6 ----
 const categories = document.querySelector('#categories');
 const items = categories.querySelectorAll('.item');
 
