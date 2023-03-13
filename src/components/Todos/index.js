@@ -30,23 +30,20 @@ const hideLoader = () => {
   refs.loader.classList.remove('show');
 };
 
-const loadTodos = () => {
+const loadTodos = async () => {
   showLoader();
 
-  return readTodos()
-    .then(data => {
-      todos = data;
-    })
-    .catch(error => {
-      todos = [];
-      console.log('error happened:', error.message);
-    })
-    .finally(() => {
-      hideLoader();
-    });
+  try {
+    todos = await readTodos();
+  } catch (error) {
+    todos = [];
+    console.log('error happened:', error.message);
+  }
+
+  hideLoader();
 };
 
-const handleSubmit = event => {
+const handleSubmit = async event => {
   const input = event.target.elements.text;
   const { value } = input;
   const newTodo = { value, checked: false };
@@ -54,34 +51,30 @@ const handleSubmit = event => {
   event.preventDefault();
   showLoader();
 
-  createTodo(newTodo)
-    .then(() => {
-      todos.push(newTodo);
-      input.value = '';
-      render();
-    })
-    .catch(error => {
-      console.log('error happened:', error.message);
-    })
-    .finally(() => {
-      hideLoader();
-    });
+  try {
+    await createTodo(newTodo);
+    todos.push(newTodo);
+    input.value = '';
+    render();
+  } catch (error) {
+    console.log('error happened:', error.message);
+  }
+
+  hideLoader();
 };
 
-const removeTodo = id => {
+const removeTodo = async id => {
   showLoader();
 
-  deleteTodo(id)
-    .then(() => {
-      todos = todos.filter(todo => todo.id !== id);
-      render();
-    })
-    .catch(error => {
-      console.log('error happened:', error.message);
-    })
-    .finally(() => {
-      hideLoader();
-    });
+  try {
+    await deleteTodo(id);
+    todos = todos.filter(todo => todo.id !== id);
+    render();
+  } catch (error) {
+    console.log('error happened:', error.message);
+  }
+
+  hideLoader();
 };
 
 const viewTodo = id => {
@@ -137,9 +130,12 @@ const handleTodoClick = event => {
   }
 };
 
-loadTodos().then(() => {
+const initialise = async () => {
+  await loadTodos();
   render();
-});
+};
+
+initialise();
 
 refs.form.addEventListener('submit', handleSubmit);
 refs.list.addEventListener('click', handleTodoClick);
