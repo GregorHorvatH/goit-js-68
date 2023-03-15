@@ -1,11 +1,12 @@
-import './components/Todos';
+// import './components/Todos';
 
 // ----- asyn/await -------
 const fn1 = () =>
-  new Promise(resolve => {
+  new Promise((resolve, reject) => {
     setTimeout(() => {
       console.log('fn 1');
       resolve(1);
+      // reject('error happened');
     }, 700);
   });
 
@@ -34,6 +35,35 @@ const fn4 = () =>
     }, 460);
   });
 
+// const myFn1 = () => {
+//   console.log('start');
+//   fn1()
+//     .then(data => {
+//       console.log(data);
+//     })
+//     .catch(error => {
+//       console.log(error);
+//     })
+//     .finally(() => {
+//       console.log('finish');
+//     });
+// };
+
+async function myFn2() {
+  try {
+    const data = await fn1();
+    console.log(data);
+  } catch (error) {
+    console.log(error);
+  }
+}
+// myFn1();
+
+console.log('start');
+myFn2().then(() => {
+  console.log('finish');
+});
+
 // console.log('start');
 // fn1()
 //   .then(() => fn2())
@@ -49,14 +79,15 @@ const fn4 = () =>
 // const mainFn = async () => {
 //   console.log('start');
 
-// try {
-//   await fn1();
-//   await fn2();
-//   await fn3();
-//   await fn4();
-// } catch (error) {
-//   console.log('error:', error);
-// }
+//   try {
+//     await fn1();
+//     await fn2();
+//     await fn3();
+//     await fn4();
+//   } catch (error) {
+//     console.log('error:', error);
+//   }
+// };
 
 //   try {
 //     const result = await Promise.all([fn1(), fn2(), fn3(), fn4()]);
